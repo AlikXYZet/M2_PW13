@@ -72,6 +72,7 @@ bool UPW13_Tools::CastToStaticMesh(const TArray<UObject*>& iObjects, TArray<USta
 	// Отфильтрованный элемент массива
 	UStaticMesh* lDataStaticMesh = nullptr;
 
+	// Фильтрация
 	for (UObject* Data : iObjects)
 	{
 		lDataStaticMesh = Cast<UStaticMesh>(Data);
@@ -82,6 +83,7 @@ bool UPW13_Tools::CastToStaticMesh(const TArray<UObject*>& iObjects, TArray<USta
 		}
 	}
 
+	// Результат фильтрации
 	if (oStaticMeshes.Num() > 0)
 		return true;
 	else

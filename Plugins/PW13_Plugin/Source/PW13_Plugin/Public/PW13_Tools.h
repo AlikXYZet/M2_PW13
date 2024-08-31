@@ -36,7 +36,7 @@ private:
 	static void SaveAsset(UObject* AssetInstance);
 
 	/**	Фильтрация всего лишнего, кроме UStaticMesh
-	@param	Objects - Объекты фильтрации
+	@param	iObjects - Объекты фильтрации
 	@param	oStaticMeshes - Массив для хранения UStaticMesh* после фильтрации
 	@return	Результат фильтрации: true, если есть элемент класса UStaticMesh
 	*/
