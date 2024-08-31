@@ -5,7 +5,7 @@
 
 
 
-void UPW13_Tools::SetLodsForStaticMeshes(TArray<UObject*> Objects, TArray<FEditorScriptingMeshReductionSettings> InputLODs)
+void UPW13_Tools::SetLODsForStaticMeshes(TArray<UObject*> Objects, TArray<FEditorScriptingMeshReductionSettings> InputLODs)
 {
 	// Проверка на наличие настроек LOD
 	if (InputLODs.Num() > 0)
@@ -13,36 +13,19 @@ void UPW13_Tools::SetLodsForStaticMeshes(TArray<UObject*> Objects, TArray<FEdito
 		// Массив для хранения UStaticMesh* после фильтрации
 		TArray<UStaticMesh*> lStaticMeshes;
 
-		// Отфильтрованный элемент массива
-		UStaticMesh* lDataStaticMesh = nullptr;
-
-		// Фильтрация всего лишнего, кроме UStaticMesh
-		for (UObject*& Data : Objects)
-		{
-			lDataStaticMesh = Cast<UStaticMesh>(Data);
-
-			if (lDataStaticMesh)
-			{
-				lStaticMeshes.Add(lDataStaticMesh);
-			}
-		}
-
-		// Проверка на наличие UStaticMesh* среди массива "Objects"
-		if (lStaticMeshes.Num() > 0)
+		// Фильтрация "Objects" до валидных UStaticMesh*
+		if (CastToStaticMesh(Objects, lStaticMeshes))
 		{
 			FEditorScriptingMeshReductionOptions Options;
 			Options.ReductionSettings = InputLODs;
 
-			for (UStaticMesh*& Data : lStaticMeshes)
+			for (UStaticMesh* Data : lStaticMeshes)
 			{
-				if (Data)
-				{
-					UEditorStaticMeshLibrary::SetLods(Data, Options);
+				UEditorStaticMeshLibrary::SetLods(Data, Options);
 
-					Data->MarkPackageDirty();
+				Data->MarkPackageDirty();
 
-					SaveAsset(Data);
-				}
+				SaveAsset(Data);
 			}
 		}
 		else
@@ -82,4 +65,25 @@ void UPW13_Tools::SaveAsset(UObject* AssetInstance)
 			}
 		}
 	}
+}
+
+bool UPW13_Tools::CastToStaticMesh(const TArray<UObject*>& iObjects, TArray<UStaticMesh*>& oStaticMeshes)
+{
+	// Отфильтрованный элемент массива
+	UStaticMesh* lDataStaticMesh = nullptr;
+
+	for (UObject* Data : iObjects)
+	{
+		lDataStaticMesh = Cast<UStaticMesh>(Data);
+
+		if (lDataStaticMesh)
+		{
+			oStaticMeshes.Add(lDataStaticMesh);
+		}
+	}
+
+	if (oStaticMeshes.Num() > 0)
+		return true;
+	else
+		return false;
 }
