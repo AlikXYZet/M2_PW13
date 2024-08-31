@@ -19,7 +19,7 @@ int32 UGenerateLODsCommandlet::Main(const FString& Params)
 	//TMap<FString, FString> ParamsMap;
 
 	ParseCommandLine(*Params, Tokens, Switches);
-	// -run=PW13 -GenerateLod /Game/StarterContent/Props /Game/StarterContent/Shapes
+	// -run=GenerateLODs -GenerateLod /Game/StarterContent/Props /Game/StarterContent/Shapes
 
 	if (Tokens.Num() > 0)
 	{
