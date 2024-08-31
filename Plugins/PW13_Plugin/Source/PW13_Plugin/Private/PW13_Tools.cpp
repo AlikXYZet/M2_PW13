@@ -1,41 +1,60 @@
+﻿
+// Base:
 #include "PW13_Tools.h"
-#include "EditorStaticMeshLibrary.h"
+//--------------------------------------------------------------------------------------
 
 
 
-void UPW13_Tools::SetLodsForStaticMeshes(TArray<UStaticMesh*> StaticMeshes)
+void UPW13_Tools::SetLodsForStaticMeshes(TArray<UObject*> Objects, TArray<FEditorScriptingMeshReductionSettings> InputLODs)
 {
-	TArray<FEditorScriptingMeshReductionSettings> ReductionSettings;
-	FEditorScriptingMeshReductionSettings Settings;
-
-	//LOD 0
-	Settings.PercentTriangles = 1;
-	Settings.ScreenSize = 0.9;
-	ReductionSettings.Add(Settings);
-
-	//LOD 1
-	Settings.PercentTriangles = 0.5;
-	Settings.ScreenSize = 0.5;
-	ReductionSettings.Add(Settings);
-
-	//LOD 2
-	Settings.PercentTriangles = 0.1;
-	Settings.ScreenSize = 0.3;
-	ReductionSettings.Add(Settings);
-
-	FEditorScriptingMeshReductionOptions Options;
-	Options.ReductionSettings = ReductionSettings;
-
-	for (UStaticMesh*& Data : StaticMeshes)
+	// Проверка на наличие настроек LOD
+	if (InputLODs.Num() > 0)
 	{
-		if (Data)
+		// Массив для хранения UStaticMesh* после фильтрации
+		TArray<UStaticMesh*> lStaticMeshes;
+
+		// Отфильтрованный элемент массива
+		UStaticMesh* lDataStaticMesh = nullptr;
+
+		// Фильтрация всего лишнего, кроме UStaticMesh
+		for (UObject*& Data : Objects)
 		{
-			UEditorStaticMeshLibrary::SetLods(Data, Options);
+			lDataStaticMesh = Cast<UStaticMesh>(Data);
 
-			Data->MarkPackageDirty();
-
-			SaveAsset(Data);
+			if (lDataStaticMesh)
+			{
+				lStaticMeshes.Add(lDataStaticMesh);
+			}
 		}
+
+		// Проверка на наличие UStaticMesh* среди массива "Objects"
+		if (lStaticMeshes.Num() > 0)
+		{
+			FEditorScriptingMeshReductionOptions Options;
+			Options.ReductionSettings = InputLODs;
+
+			for (UStaticMesh*& Data : lStaticMeshes)
+			{
+				if (Data)
+				{
+					UEditorStaticMeshLibrary::SetLods(Data, Options);
+
+					Data->MarkPackageDirty();
+
+					SaveAsset(Data);
+				}
+			}
+		}
+		else
+		{
+			// LOG: Ни один из Ассетов не является UStaticMesh
+			UE_LOG(LogClass, Warning, TEXT("None of the Assets is UStaticMesh!"));
+		}
+	}
+	else
+	{
+		// LOG: Нет настроек LOD
+		UE_LOG(LogClass, Warning, TEXT("No LOD settings!"));
 	}
 }
 

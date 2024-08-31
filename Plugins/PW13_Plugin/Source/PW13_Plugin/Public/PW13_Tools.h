@@ -1,23 +1,35 @@
-#pragma once
+﻿#pragma once
 
+// Base:
 #include "CoreMinimal.h"
-#include "Engine/StaticMesh.h"
+
+// Plugins:
+#include "EditorStaticMeshLibrary.h"
+
+// Generated:
 #include "PW13_Tools.generated.h"
+//--------------------------------------------------------------------------------------
 
 
-UCLASS(BlueprintType, Blueprintable)
-class PW13_PLUGIN_API UPW13_Tools : public UObject
+
+UCLASS()
+class PW13_PLUGIN_API UPW13_Tools : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
+
 public:
 
-	//FPW13_Tools();
-	//~FPW13_Tools();
-
-	UFUNCTION(BlueprintCallable, Category = "PW13_Tools")
-	void SetLodsForStaticMeshes(TArray<UStaticMesh*> StaticMeshes);
+	/* Метод по заданию: Генерирует LOD для UStaticMesh
+	@param	Objects - Массив UObject для которых требуется генерация LOD (Будет отфильтрован до UStaticMesh)
+	@param	InputLODs - Массив настроек LOD
+	*/
+	UFUNCTION(BlueprintCallable, Category = "PW13_Plugin|LOD")
+	static void SetLodsForStaticMeshes(TArray<UObject*> Objects, TArray<FEditorScriptingMeshReductionSettings> InputLODs);
 
 private:
 
-	void SaveAsset(UObject* AssetInstance);
+	/* Сохранение Ассетов :
+	@param	AssetInstance - Экземпляр Ассета, который необходимо сохранить
+	*/
+	static void SaveAsset(UObject* AssetInstance);
 };
